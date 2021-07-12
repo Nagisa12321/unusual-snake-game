@@ -3,15 +3,19 @@ package model;
 import domain.game.Food;
 import domain.game.Player;
 import domain.game.Snake;
+import obsaver.Observable;
+import obsaver.Observer;
 
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author jtchen
  * @version 1.0
  * @date 2021/7/11 22:19
  */
-public class Game {
+public class Game implements Observable {
 	// 全局只有一个游戏, 用单例吧
 	private static final Game game = new Game();
 
@@ -31,8 +35,9 @@ public class Game {
 	public static Game getInstance() { return game; }
 
 	// 游戏状态
-	// 0 waiting
-	// 1 started
+	// 0 PLAYER_WAITING
+	// 2 START_WAITING
+	// 1 START
 	private int state;
 
 	// 蛇的引用, 只有在started才会用到
@@ -44,10 +49,14 @@ public class Game {
 	// 地图的缓存, 不用每次都new
 	private final int[][] map;
 
+	// 观察者
+	private final List<Observer> observerList;
+
 	// 初始化游戏
 	private Game() {
 		map = new int[MAP_HEIGHT + 2][MAP_WIDTH + 2];
 		state = 0;
+		observerList = new ArrayList<>();
 	}
 
 	// 获得当前游戏状态
@@ -63,15 +72,24 @@ public class Game {
 	// 玩家加入时进行初始化
 	public void initialFood(Socket socket) {
 		foodPlayer = new Player(new Food(), 1, socket);
+
+		// remember to register yourself
+		foodPlayer.register();
 	}
 
 	// 玩家加入时进行初始化
 	public void initialSnake(Socket socket) {
 		snakePlayer = new Player(new Snake(), 0, socket);
+
+		// same
+		snakePlayer.register();
 	}
 
 	// 游戏结束应该把应用变为null, 我是根据这个判断的
 	public void gameOver() {
+		foodPlayer.undoRegister();
+		snakePlayer.undoRegister();
+
 		foodPlayer = null;
 		snakePlayer = null;
 	}
@@ -114,5 +132,32 @@ public class Game {
 	// 从snakePlayer身上拿取snake
 	public Food getFood() {
 		return (Food) (foodPlayer.getToy());
+	}
+
+	// 获得蛇玩家
+	public Player getSnakePlayer() {
+		return snakePlayer;
+	}
+
+	// 获得食物玩家
+	public Player getFoodPlayer() {
+		return foodPlayer;
+	}
+
+	@Override
+	public void register(Observer observer) {
+		observerList.add(observer);
+	}
+
+	// 通知观察者更新
+	@Override
+	public void notifyObservers() {
+		for (Observer observer : observerList)
+			observer.update();
+	}
+
+	@Override
+	public void removeObserver(Observer observer) {
+		observerList.remove(observer);
 	}
 }

@@ -20,11 +20,16 @@ public class GamePusher implements Runnable {
 		this.running = true;
 	}
 
+	public void makeStartedAble() {
+		this.running = true;
+	}
+
 	// 该线程负责推动蛇/食物前进
 	@Override
 	public void run() {
 		try {
 			while (running) {
+				// todo: 处理蛇变长
 				for (int i = 0; i < Game.FASTER_THAN_SNAKE; i++) {
 					if (i == 0)
 						controller.pushSnake();

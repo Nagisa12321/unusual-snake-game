@@ -1,8 +1,11 @@
-package obsaver;/**
- * 
+package obsaver;
+
+/**
  * @author jtchen
- * @date 2021/7/12 13:47
  * @version 1.0
+ * @date 2021/7/12 13:47
  */
-public class Observer {
+public interface Observer {
+
+	void update();
 }

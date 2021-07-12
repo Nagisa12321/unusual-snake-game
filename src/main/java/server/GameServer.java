@@ -14,6 +14,7 @@ import java.net.Socket;
 public class GameServer {
 	// everything start on this
 	public static void main(String[] args) {
+		// todo: 开启终端线程, 方便调试
 
 		// 大家(两人)公用相同的控制器也无所谓
 		// 因为可以认为是代码序列

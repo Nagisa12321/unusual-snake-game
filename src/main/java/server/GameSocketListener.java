@@ -44,6 +44,7 @@ public class GameSocketListener implements Runnable {
 				if (type == 1) {
 					controller.move(playerType, Integer.parseInt(message.getContext()));
 				}
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
