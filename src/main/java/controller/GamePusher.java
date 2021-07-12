@@ -27,6 +27,7 @@ public class GamePusher implements Runnable {
 	// 该线程负责推动蛇/食物前进
 	@Override
 	public void run() {
+		System.out.println("the pusher start!");
 		try {
 			while (running) {
 				// todo: 处理蛇变长

@@ -30,14 +30,14 @@ public class GameController {
 	// 推动食物前进
 	public void pushFood() {
 		Food food = game.getFood();
-		food.move(food.getDirection());
+		move(1, food.getDirection());
 
 	}
 
 	// 推动蛇前进
 	public void pushSnake() {
 		Snake snake = game.getSnake();
-		snake.move(snake.getDirection());
+		move(0, snake.getDirection());
 	}
 
 	// type
@@ -49,7 +49,7 @@ public class GameController {
 				MessageUtil.sendMess(new Message(4, -1, "the game has been started!"), socket);
 				return;
 			}
-			if (type == 0) {
+			if (type == 1) {
 				if (game.getFood() != null) {
 					MessageUtil.sendMess(
 							new Message(4, -1,
@@ -72,6 +72,9 @@ public class GameController {
 			// 判断游戏是否进入START_WAITING
 			if (game.getSnake() != null && game.getFood() != null) {
 				game.setState(2);
+				Message mess = new Message(3, -1, "now is two player here, please prepare for the game. ");
+				game.getSnakePlayer().sendMess(mess);
+				game.getFoodPlayer().sendMess(mess);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -119,6 +122,8 @@ public class GameController {
 
 	// 当游戏开始的时候接收移动信息
 	public void move(int type, int direction) {
+		if (game.getState() != 1)
+			return;
 		try {
 			Food food = game.getFood();
 			Snake snake = game.getSnake();
@@ -128,9 +133,9 @@ public class GameController {
 					return;
 				// 下一步撞墙直接返回
 				if (GameUtil.hitWall(direction, snake.getHead()) ||
-						GameUtil.hitSnake(direction, snake.getHead(), snake.getBody())) {
+						GameUtil.hitSnake(direction, GameUtil.nextPos(direction, snake.getHead()), snake.getBody())) {
 
-					Message mess = new Message(2, -1, "the snake lose and the food won !!!XD");
+					Message mess = new Message(2, 1, "the snake lose and the food won !!!XD");
 					game.getFoodPlayer().sendMess(mess);
 					game.getSnakePlayer().sendMess(mess);
 
@@ -142,7 +147,7 @@ public class GameController {
 				}
 				// 下一步撞到食物就是赢了
 				if (GameUtil.hitFood(direction, snake.getHead(), food.getPos())) {
-					Message mess = new Message(2, -1, "the snake won and the food lose !!!XD");
+					Message mess = new Message(2, 0, "the snake won and the food lose !!!XD");
 					game.getFoodPlayer().sendMess(mess);
 					game.getSnakePlayer().sendMess(mess);
 

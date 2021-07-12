@@ -20,7 +20,7 @@ public class Game implements Observable {
 	private static final Game game = new Game();
 
 	// 游戏场景宽度
-	public static final int MAP_WIDTH = 60;
+	public static final int MAP_WIDTH = 30;
 
 	// 游戏场景高度
 	public static final int MAP_HEIGHT = 30;
@@ -101,6 +101,8 @@ public class Game implements Observable {
 	// 3 - food
 	// 4 - snake head
 	public int[][] getMap() {
+		// 游戏没开始返回null
+		if (state == 0) return null;
 		// 全部置为0
 		for (int i = 0; i < MAP_HEIGHT + 2; i++)
 			for (int j = 0; j < MAP_WIDTH + 2; j++)
@@ -126,12 +128,12 @@ public class Game implements Observable {
 
 	// 从snakePlayer身上拿取snake
 	public Snake getSnake() {
-		return (Snake) (snakePlayer.getToy());
+		return snakePlayer == null ? null : (Snake) (snakePlayer.getToy());
 	}
 
 	// 从snakePlayer身上拿取snake
 	public Food getFood() {
-		return (Food) (foodPlayer.getToy());
+		return foodPlayer == null ? null : (Food) (foodPlayer.getToy());
 	}
 
 	// 获得蛇玩家
@@ -154,6 +156,8 @@ public class Game implements Observable {
 	public void notifyObservers() {
 		for (Observer observer : observerList)
 			observer.update();
+
+		System.out.println("push the game");
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package server;
 
 import controller.GameController;
 import domain.mess.Message;
+import utils.LogUtil;
 import utils.MessageUtil;
 
 import java.io.IOException;
@@ -31,9 +32,11 @@ public class GameSocketListener implements Runnable {
 
 	@Override
 	public void run() {
+		LogUtil.log("game socket listener start to listen the sock: " + socket);
 		while (running) {
 			try {
 				Message message = MessageUtil.receiveMess(socket);
+				LogUtil.log("get the message: " + message);
 				int type = message.getType();
 				int playerType = message.getPlayerType();
 				// join 消息
@@ -43,6 +46,10 @@ public class GameSocketListener implements Runnable {
 				// move消息
 				if (type == 1) {
 					controller.move(playerType, Integer.parseInt(message.getContext()));
+				}
+				// prepared消息
+				if (type == 2) {
+					controller.preparePlaying(playerType);
 				}
 
 			} catch (IOException e) {

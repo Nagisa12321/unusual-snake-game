@@ -8,6 +8,7 @@ import utils.MessageUtil;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.StringJoiner;
 
 /**
  * @author jtchen
@@ -70,14 +71,17 @@ public class Player implements Observer {
 		try {
 			StringBuilder contextBuffer = new StringBuilder();
 			int[][] map = game.getMap();
-			contextBuffer.append(map.length);
-			contextBuffer.append(map[0].length);
+			contextBuffer.append((char) (map.length));
+			contextBuffer.append((char) (map[0].length));
 			for (int i = 0; i < map.length; i++) {
 				for (int j = 0; j < map[0].length; j++) {
-					contextBuffer.append(map[0][1]);
+					contextBuffer.append((char) map[i][j]);
 				}
 			}
-			sendMess(new Message(1, -1, contextBuffer.toString()));
+			Message message = new Message(1, -1, contextBuffer.toString());
+			sendMess(message);
+
+			System.out.println(message);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -85,5 +89,14 @@ public class Player implements Observer {
 
 	public void sendMess(Message message) throws IOException {
 		MessageUtil.sendMess(message, socket);
+	}
+
+	@Override
+	public String toString() {
+		return new StringJoiner(", ", Player.class.getSimpleName() + "[", "]")
+				.add("socket=" + socket)
+				.add("type=" + type)
+				.add("prepared=" + prepared)
+				.toString();
 	}
 }

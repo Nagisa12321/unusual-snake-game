@@ -1,6 +1,8 @@
 package server;
 
 import controller.GameController;
+import controller.GameTerminal;
+import utils.LogUtil;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -14,7 +16,10 @@ import java.net.Socket;
 public class GameServer {
 	// everything start on this
 	public static void main(String[] args) {
-		// todo: 开启终端线程, 方便调试
+		LogUtil.log("test log!");
+		// open the terminal
+		GameTerminal snake = new GameTerminal("snake");
+		new Thread(snake).start();
 
 		// 大家(两人)公用相同的控制器也无所谓
 		// 因为可以认为是代码序列
@@ -25,6 +30,7 @@ public class GameServer {
 			while (true) {
 				Socket socket = serverSocket.accept();
 
+				LogUtil.log("a socket is connect: " + socket);
 				// 监听到用户链接, 启动线程
 				new Thread(new GameSocketListener(controller, socket)).start();
 			}
